@@ -11,6 +11,11 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
+import com.facebook.flipper.android.AndroidFlipperClient
+import com.facebook.flipper.android.utils.FlipperUtils
+import com.facebook.flipper.core.FlipperClient
+import com.facebook.flipper.plugins.inspector.DescriptorMapping
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 
 class MainApplication : Application(), ReactApplication {
 
@@ -39,6 +44,11 @@ class MainApplication : Application(), ReactApplication {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
+    }
+    if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(this)) {
+      val client = AndroidFlipperClient.getInstance(this)
+      client.addPlugin(InspectorFlipperPlugin(this, DescriptorMapping.withDefaults()))
+      client.start()
     }
   }
 }

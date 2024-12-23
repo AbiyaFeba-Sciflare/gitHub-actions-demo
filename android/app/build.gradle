@@ -107,10 +107,27 @@ android {
     }
 }
 
+// dependencies {
+//     // The version of react-native is set by the React Native Gradle Plugin
+//     implementation("com.facebook.react:react-android")
+//     debugImplementation 'com.facebook.flipper:flipper:0.273.0'
+//     debugImplementation 'com.facebook.soloader:soloader:0.10.1' 
+//     debugImplementation 'com.facebook.flipper:flipper-leakcanary2-plugin:0.267.1'
+//     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
+//     // debugImplementation 'com.facebook.flipper:flipper-memory:0.273.0'
+//     releaseImplementation 'com.facebook.flipper:flipper-noop:0.273.0'
+//     if (hermesEnabled.toBoolean()) {
+//         implementation("com.facebook.react:hermes-android")
+//     } else {
+//         implementation jscFlavor
+//     }
+// }
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-
+    debugImplementation 'com.facebook.flipper:flipper:0.273.0'
+    debugImplementation 'com.facebook.soloader:soloader:0.10.5'
+    releaseImplementation 'com.facebook.flipper:flipper-noop:0.273.0'
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

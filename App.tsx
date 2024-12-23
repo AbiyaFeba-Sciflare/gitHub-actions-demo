@@ -1,118 +1,240 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import {StatusBar,Image, StyleSheet, Text} from 'react-native';
+import React, { useEffect } from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import SplashScreen from './Screens/AuthFlow/SplashScreen';
+import OnBoardingScreen from './Screens/AuthFlow/OnBoardingScreen';
+import LoginScreen from './Screens/AuthFlow/LoginScreen';
+import RegisterScreen from './Screens/AuthFlow/RegisterScreen';
+import OtpScreen from './Screens/AuthFlow/OtpScreen';
+import Home from './Screens/Home/Home';
+import MyMatchesScreen from './Screens/MyMatches/MyMatchesScreen';
+import WinnersScreen from './Screens/WinnersModule/WinnersScreen';
+import RewardsScreen from './Screens/RewardsModule/RewardsScreen';
+import ChatScreen from './Screens/ChatModule/ChatScreen';
+import ContestScreen from './Screens/ContestTabScreens/ContestScreen';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import ProfileBaseScreen from './Screens/Profile/ProfileBaseScreen';
+import CustomDrawerContent from './Screens/CustomDrawerComponent';
+import TeamCreation from './Screens/TeamCreationModule/TeamCreation';
+import Preview from './Screens/TeamCreationModule/Preview';
+import Notification from './Screens/Notification/Notification';
+import useAuthStore from './store/useGeneralState';
+import { ApolloProvider } from '@apollo/client';
+import client from './apolloClient';
+import Toast  from 'react-native-toast-message'
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+type StackParamList = {
+  SplashScreen: undefined;
+  LoginScreen: undefined;
+  OtpScreen: {data: string};
+  OnBoardingScreen: undefined;
+  RegisterScreen: undefined;
+  Home: undefined;
+  ContestScreen: undefined;
+  TeamCreation: undefined;
+  Preview: undefined;
+  Notification: undefined;
+};
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Stack = createStackNavigator<StackParamList>();
+const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function DrawerNavigator() {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <Drawer.Navigator
+      screenOptions={{headerShown: false, drawerType: 'front'}}
+      drawerContent={props => <CustomDrawerContent {...props} />}>
+      <Drawer.Screen
+        name="Home"
+        component={HomeTabNavigator}
+        options={{
+          drawerIcon: ({color, size}) => (
+            <Image
+              source={require('./Screens/assets/MyMatchesLogo.png')}
+              style={styles.tabIcon}
+            />
+          ),
+          drawerLabel: ({focused, color}) => (
+            <Text style={{color: color}}>DEFAULT PROFILE</Text>
+          ),
+        }}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <Drawer.Screen name="ProfileBaseScreen" component={ProfileBaseScreen} />
+    </Drawer.Navigator>
   );
 }
+
+const HomeTabNavigator = () => {
+  return (
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        tabBarActiveTintColor: 'red',
+        tabBarInactiveBackgroundColor: 'white',
+      }}>
+      <Tab.Screen
+        name="Home"
+        component={Home}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({color, size}) => (
+            <Image
+              source={require('./Screens/assets/Home.png')}
+              style={[
+                styles.tabIcon,
+                {tintColor: color, width: size, height: size},
+              ]}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="MyMatches"
+        component={MyMatchesScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({color, size}) => (
+            <Image
+              source={require('./Screens/assets/MyMatchesLogo.png')}
+              style={[
+                styles.tabIcon,
+                {tintColor: color, width: size, height: size},
+              ]}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Rewards"
+        component={RewardsScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({color, size}) => (
+            <Image
+              source={require('./Screens/assets/Rewards.png')}
+              style={[
+                styles.tabIcon,
+                {tintColor: color, width: size, height: size},
+              ]}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({color, size}) => (
+            <Image
+              source={require('./Screens/assets/Chat.png')}
+              style={[
+                styles.tabIcon,
+                {tintColor: color, width: size, height: size},
+              ]}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Winner"
+        component={WinnersScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({color, size}) => (
+            <Image
+              source={require('./Screens/assets/ReawrdsLogo.png')}
+              style={[
+                styles.tabIcon,
+                {tintColor: color, width: size, height: size},
+              ]}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
+
+  const App:React.FC = () => {
+    const {isSignedIn} = useAuthStore();
+
+    return (
+      <ApolloProvider client={client}>
+       <NavigationContainer>
+          <StatusBar
+            translucent
+            backgroundColor="transparent"
+            barStyle="light-content"
+          />
+          <Stack.Navigator initialRouteName={isSignedIn ? 'Home' : 'SplashScreen'}>
+                <Stack.Screen
+                  name="SplashScreen"
+                  component={SplashScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="OnBoardingScreen"
+                  component={OnBoardingScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="LoginScreen"
+                  component={LoginScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="RegisterScreen"
+                  component={RegisterScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="OtpScreen"
+                  component={OtpScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Home"
+                  component={DrawerNavigator}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="ContestScreen"
+                  component={ContestScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="TeamCreation"
+                  component={TeamCreation}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Preview"
+                  component={Preview}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Notification"
+                  component={Notification}
+                  options={{ headerShown: false }}
+                />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ApolloProvider>
+       
+    );
+  };
+  
+  export default App;
+  
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  tabIcon: {
+    height: 20,
+    width: 20,
   },
 });
-
-export default App;
